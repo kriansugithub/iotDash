@@ -192,7 +192,6 @@
               </a>
               <ul class="treeview-menu">
                 <li class="active"><a href="index.html"><i class="fa fa-circle-o"></i> Dashboard</a></li>
-				<li ><a href="sensorLog.html"><i class="fa fa-circle-o"></i> SensorLog</a></li>
               </ul>
             </li>
           </ul>
@@ -561,16 +560,10 @@
 	
 	<script src="dist/js/mqtt.min.js"></script>
 	<script>
-	 //production
 	 var client = mqtt.connect('mqtts://tailor.cloudmqtt.com:32014/', {
       username: 'brdjmprz',
       password: 'JKGtuvbz0XWN',
     })
-	//test
-	/*var client = mqtt.connect('mqtts://tailor.cloudmqtt.com:31024/', {
-      username: 'xlqgozsd',
-      password: 'V6JapfUPuwqH',
-    })*/
     client.on('connect', function (data) {
       console.log('connected');
 	  $("#device-status").html('Connected');
@@ -602,8 +595,6 @@
 	client.subscribe("RUNAUTO_STS")
 	client.subscribe("AutoTimeData")
 	client.subscribe("AutoTimeSts")
-	//client.subscribe("SensorVal")
-	//client.subscribe("ZoneSts")
 	
     for(i=0;i<4;i++) {
       client.subscribe(`LED${i}`)
@@ -691,37 +682,6 @@
 		}
 		$("#autoActiveSts").html('<span class="label label-danger">ยังไม่ทำงาน</span>');
 	  }
-	/*  else if(topic == 'SensorVal') {
-		var obj = jQuery.parseJSON( payload );
-		//alert(obj.FlowRate);
-		$("#humd-val").text(obj.Humidity);
-		$("#temp-val").text(obj.Temperature);
-		$("#flow-rate").text(obj.FlowRate);
-      }
-	  else if(topic == 'ZoneSts') {
-		var obj = jQuery.parseJSON( payload );
-		if(obj.Zone1Sts=='ON'){
-			$("#zone1-sw").prop('checked', true);
-		}else{
-			$("#zone1-sw").prop('checked', false);
-		}
-		if(obj.Zone2Sts=='ON'){
-			$("#zone2-sw").prop('checked', true);
-		}else{
-			$("#zone2-sw").prop('checked', false);
-		}
-		if(obj.Zone3Sts=='ON'){
-			$("#zone3-sw").prop('checked', true);
-		}else{
-			$("#zone3-sw").prop('checked', false);
-		}
-		if(obj.Zone4Sts=='ON'){
-			$("#zone4-sw").prop('checked', true);
-		}else{
-			$("#zone4-sw").prop('checked', false);
-		}
-      }*/
-	  
 	  
 		$("#mon-val").text(topic+' : '+payload);
 		console.log(`${topic}: ${payload} ${Date.now()}`)
@@ -808,38 +768,40 @@
 	function getAutoTimeData(dat){
 	$('#autoTimeTbl').empty();
 	//alert(dat);
-		var obj = jQuery.parseJSON(dat);
-		$.each(obj, function(i, item) {
-			//alert(item.id);
-			maxId = item.id * 1;
-			var tr='<tr style="corsor:pointer;" onclick="dialogAutoTime('+item.id+')">'
-				tr = tr +'<td>'+item.s_hour+':'+item.s_min+' น.  <input type="hidden" id="hh'+item.id+'" value="'+item.s_hour+'"/> <input type="hidden" id="mm'+item.id+'" value="'+item.s_min+'"/></td>';
-				tr = tr +'<td>'+item.s_time+' นาที <input type="hidden" id="tm'+item.id+'" value="'+item.s_time+'"/></td>';
+		var dat1 = dat + "";
+		var res = dat1.split(";");
+		for(var i=0; i<res.length ;i++){
+			//alert(res[i]);
+			var res2 = res[i].split("|");
+			maxId = res2[0]*1;
+			var tr='<tr style="corsor:pointer;" onclick="dialogAutoTime('+res2[0]+')">'
+				tr = tr +'<td>'+res2[1]+':'+res2[2]+' น.  <input type="hidden" id="hh'+res2[0]+'" value="'+res2[1]+'"/> <input type="hidden" id="mm'+res2[0]+'" value="'+res2[2]+'"/></td>';
+				tr = tr +'<td>'+res2[3]+' นาที <input type="hidden" id="tm'+res2[0]+'" value="'+res2[3]+'"/></td>';
 				var sp = '<span class="label label-danger">ปิด</span>';
-				if(item.zone1 == '1'){
+				if(res2[4] == '1'){
 					sp = '<span class="label label-success">เปิด</span>';
 				}
-				tr = tr +'<td>'+sp+' <input type="hidden" id="z1'+item.id+'" value="'+item.zone1+'"/></td>';
+				tr = tr +'<td>'+sp+' <input type="hidden" id="z1'+res2[0]+'" value="'+res2[4]+'"/></td>';
 				sp = '<span class="label label-danger">ปิด</span>';
-				if(item.zone2 == '1'){
+				if(res2[5] == '1'){
 					sp = '<span class="label label-success">เปิด</span>';
 				}
-				tr = tr +'<td>'+sp+' <input type="hidden" id="z2'+item.id+'" value="'+item.zone2+'"/></td>';
+				tr = tr +'<td>'+sp+' <input type="hidden" id="z2'+res2[0]+'" value="'+res2[5]+'"/></td>';
 				sp = '<span class="label label-danger">ปิด</span>';
-				if(item.zone3 == '1'){
+				if(res2[6] == '1'){
 					sp = '<span class="label label-success">เปิด</span>';
 				}
-				tr = tr +'<td>'+sp+' <input type="hidden" id="z3'+item.id+'" value="'+item.zone3+'"/></td>';
+				tr = tr +'<td>'+sp+' <input type="hidden" id="z3'+res2[0]+'" value="'+res2[6]+'"/></td>';
 				sp = '<span class="label label-danger">ปิด</span>';
-				if(item.zone4 == '1'){
+				if(res2[7] == '1'){
 					sp = '<span class="label label-success">เปิด</span>';
 				}
-				tr = tr +'<td>'+sp+' <input type="hidden" id="z4'+item.id+'" value="'+item.zone4+'"/></td>';
+				tr = tr +'<td>'+sp+' <input type="hidden" id="z4'+res2[0]+'" value="'+res2[7]+'"/></td>';
 				tr = tr +'</tr>'
 			
 			$('#autoTimeTbl').append(tr);
 			
-		});
+		}
 		//autoTimeTbl
 	}
 	
@@ -862,20 +824,9 @@
 			id = maxId+1;
 			 flg = 'A';
 		}
-		//var txt = id+'|'+s_hour+'|'+s_min+'|'+s_time+'|'+s_zone1+'|'+s_zone2+'|'+s_zone3+'|'+s_zone4+'|'+flg+'|';
-		var item = {}
-		item ["id"] = ""+id;
-        item ["s_hour"] = s_hour;
-        item ["s_min"] = s_min;
-		item ["s_time"] = s_time;
-		item ["zone1"] = s_zone1;
-		item ["zone2"] = s_zone2;
-		item ["zone3"] = s_zone3;
-		item ["zone4"] = s_zone4;
-		item ["flag"] = flg;
-		
-		//alert(JSON.stringify(item));
-		client.publish('AutoTimeUpd', JSON.stringify(item));
+		var txt = id+'|'+s_hour+'|'+s_min+'|'+s_time+'|'+s_zone1+'|'+s_zone2+'|'+s_zone3+'|'+s_zone4+'|'+flg+'|';
+		//alert(txt);
+		client.publish('AutoTimeUpd', txt);
 		$("#modalAdd").modal('hide');
 	}
 	
@@ -890,19 +841,9 @@
 		
 		var id = $("#s_id").val();
 		var flg = 'D';
-		//var txt = id+'|'+s_hour+'|'+s_min+'|'+s_time+'|'+s_zone1+'|'+s_zone2+'|'+s_zone3+'|'+s_zone4+'|'+flg+'|';
-		var item = {}
-		item ["id"] = ""+id;
-        item ["s_hour"] = s_hour;
-        item ["s_min"] = s_min;
-		item ["s_time"] = s_time;
-		item ["zone1"] = s_zone1;
-		item ["zone2"] = s_zone2;
-		item ["zone3"] = s_zone3;
-		item ["zone4"] = s_zone4;
-		item ["flag"] = flg;
+		var txt = id+'|'+s_hour+'|'+s_min+'|'+s_time+'|'+s_zone1+'|'+s_zone2+'|'+s_zone3+'|'+s_zone4+'|'+flg+'|';
 		//alert(txt);
-		client.publish('AutoTimeUpd', JSON.stringify(item));
+		client.publish('AutoTimeUpd', txt);
 		$("#modalAdd").modal('hide');
 	}
 	
