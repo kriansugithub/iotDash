@@ -592,19 +592,19 @@
     client.subscribe("Temperature2")
     client.subscribe("SoilHumidity2")
 	client.subscribe("FlowRate")
-	client.subscribe("LED0_STS")
+	/*client.subscribe("LED0_STS")
 	client.subscribe("LED1_STS")
 	client.subscribe("LED2_STS")
 	client.subscribe("LED3_STS")
 	client.subscribe("LED0_RTN")
 	client.subscribe("LED1_RTN")
 	client.subscribe("LED2_RTN")
-	client.subscribe("LED3_RTN")
+	client.subscribe("LED3_RTN")*/
 	client.subscribe("RUNAUTO_STS")
 	client.subscribe("AutoTimeData")
-	client.subscribe("AutoTimeSts")
+	//client.subscribe("AutoTimeSts")
 	//client.subscribe("SensorVal")
-	//client.subscribe("ZoneSts")
+	client.subscribe("ZoneSts")
 	
     for(i=0;i<4;i++) {
       client.subscribe(`LED${i}`)
@@ -637,7 +637,7 @@
 			if(payload == 'ON AUTO TIME'){
 				$("#autoActiveSts").html('<span class="label label-success">กำลังทำงาน</span>');
 			}
-      } else if (topic == 'LED0_STS') {
+      }/* else if (topic == 'LED0_STS') {
 		if(payload=='ON'){
 			$("#zone1-sw").prop('checked', true);
 		}else{
@@ -661,7 +661,7 @@
 		}else{
 			$("#zone4-sw").prop('checked', false);
 		}
-      } /* else if (topic == 'RUNAUTO_STS') {
+      }  else if (topic == 'RUNAUTO_STS') {
 	    var min = 0;
 		var sec = payload;
 	    while(sec >= 60){
@@ -681,7 +681,7 @@
 	  else if (topic == 'AutoTimeData') {
         getAutoTimeData(payload);
 	  }
-	  else if (topic == 'AutoTimeSts') {
+	 /* else if (topic == 'AutoTimeSts') {
 		$("#s_autoTimeSts").prop('checked', false);
 		$("#saveModalBtn").prop('disabled', false);
 		$("#delModalBtn").prop('disabled', false);
@@ -692,36 +692,36 @@
 		}
 		$("#autoActiveSts").html('<span class="label label-danger">ยังไม่ทำงาน</span>');
 	  }
-	/*  else if(topic == 'SensorVal') {
+	  else if(topic == 'SensorVal') {
 		var obj = jQuery.parseJSON( payload );
 		//alert(obj.FlowRate);
 		$("#humd-val").text(obj.Humidity);
 		$("#temp-val").text(obj.Temperature);
 		$("#flow-rate").text(obj.FlowRate);
-      }
+      }*/
 	  else if(topic == 'ZoneSts') {
 		var obj = jQuery.parseJSON( payload );
-		if(obj.Zone1Sts=='ON'){
+		if(obj.Zone1Sts=='1'){
 			$("#zone1-sw").prop('checked', true);
 		}else{
 			$("#zone1-sw").prop('checked', false);
 		}
-		if(obj.Zone2Sts=='ON'){
+		if(obj.Zone2Sts=='1'){
 			$("#zone2-sw").prop('checked', true);
 		}else{
 			$("#zone2-sw").prop('checked', false);
 		}
-		if(obj.Zone3Sts=='ON'){
+		if(obj.Zone3Sts=='1'){
 			$("#zone3-sw").prop('checked', true);
 		}else{
 			$("#zone3-sw").prop('checked', false);
 		}
-		if(obj.Zone4Sts=='ON'){
+		if(obj.Zone4Sts=='1'){
 			$("#zone4-sw").prop('checked', true);
 		}else{
 			$("#zone4-sw").prop('checked', false);
 		}
-      }*/
+      }
 	  
 	  
 		$("#mon-val").text(topic+' : '+payload);
@@ -730,30 +730,78 @@
 	
 	$("#zone1-sw").change(function() {
 	  if($(this).prop('checked')){
-		client.publish('LED0', 'ON');
+		//client.publish('LED0', 'ON');
+		var item = {}
+		item ["zone1"] = "1";
+        item ["zone2"] = "";
+        item ["zone3"] = "";
+		item ["zone4"] = "";
+		client.publish('ZoneUpd', JSON.stringify(item));
 	  }else{
-		client.publish('LED0', 'OFF');
+		//client.publish('LED0', 'OFF');
+		var item = {}
+		item ["zone1"] = "0";
+        item ["zone2"] = "";
+        item ["zone3"] = "";
+		item ["zone4"] = "";
+		client.publish('ZoneUpd', JSON.stringify(item));
 	  }
 	});
 	$("#zone2-sw").change(function() {
 	  if($(this).prop('checked')){
-		client.publish('LED1', 'ON');
+		//client.publish('LED1', 'ON');
+		var item = {}
+		item ["zone1"] = "";
+        item ["zone2"] = "1";
+        item ["zone3"] = "";
+		item ["zone4"] = "";
+		client.publish('ZoneUpd', JSON.stringify(item));
 	  }else{
-		client.publish('LED1', 'OFF');
+		//client.publish('LED1', 'OFF');
+		var item = {}
+		item ["zone1"] = "";
+        item ["zone2"] = "0";
+        item ["zone3"] = "";
+		item ["zone4"] = "";
+		client.publish('ZoneUpd', JSON.stringify(item));
 	  }
 	});
 	$("#zone3-sw").change(function() {
 	  if($(this).prop('checked')){
-		client.publish('LED2', 'ON');
+		//client.publish('LED2', 'ON');
+		var item = {}
+		item ["zone1"] = "";
+        item ["zone2"] = "";
+        item ["zone3"] = "1";
+		item ["zone4"] = "";
+		client.publish('ZoneUpd', JSON.stringify(item));
 	  }else{
-		client.publish('LED2', 'OFF');
+		//client.publish('LED2', 'OFF');
+		var item = {}
+		item ["zone1"] = "";
+        item ["zone2"] = "";
+        item ["zone3"] = "0";
+		item ["zone4"] = "";
+		client.publish('ZoneUpd', JSON.stringify(item));
 	  }
 	});
 	$("#zone4-sw").change(function() {
 	  if($(this).prop('checked')){
-		client.publish('LED3', 'ON');
+		//client.publish('LED3', 'ON');
+		var item = {}
+		item ["zone1"] = "";
+        item ["zone2"] = "";
+        item ["zone3"] = "";
+		item ["zone4"] = "1";
+		client.publish('ZoneUpd', JSON.stringify(item));
 	  }else{
-		client.publish('LED3', 'OFF');
+		//client.publish('LED3', 'OFF');
+		var item = {}
+		item ["zone1"] = "";
+        item ["zone2"] = "";
+        item ["zone3"] = "";
+		item ["zone4"] = "0";
+		client.publish('ZoneUpd', JSON.stringify(item));
 	  }
 	});
 	/*
